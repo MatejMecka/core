@@ -66,14 +66,14 @@ def setup_platform(hass, config, add_entities, discovery_info=None):
     try:
         client = Client(host, port=port)
     except AuthenticationError as msg:
-        _LOGGER.error("Authentication to %s at %s failed: %s", name, host, msg)
+        _LOGGER.error(f"Authentication to {name} at {host} failed: {msg}")
         return
     except OSError as msg:
         # occurs if horizon box is offline
-        _LOGGER.error("Connection to %s at %s failed: %s", name, host, msg)
+        _LOGGER.error(f"Connection to {name} at {host} failed: {msg}")
         raise PlatformNotReady
 
-    _LOGGER.info("Connection to %s at %s established", name, host)
+    _LOGGER.info(f"Connection to {name} at {host} established")
 
     add_entities([HorizonDevice(client, name, keys)], True)
 
@@ -159,12 +159,10 @@ class HorizonDevice(MediaPlayerEntity):
                 self._select_channel(int(media_id))
                 self._state = STATE_PLAYING
             except ValueError:
-                _LOGGER.error("Invalid channel: %s", media_id)
+                _LOGGER.error(f"Invalid channel: {media_id}")
         else:
             _LOGGER.error(
-                "Invalid media type %s. Supported type: %s",
-                media_type,
-                MEDIA_TYPE_CHANNEL,
+                f"Invalid media type {media_type}. Supported type: {MEDIA_TYPE_CHANNEL}"
             )
 
     def _select_channel(self, channel):
@@ -185,7 +183,7 @@ class HorizonDevice(MediaPlayerEntity):
                 self._client.select_channel(channel)
         except OSError as msg:
             _LOGGER.error(
-                "%s disconnected: %s. Trying to reconnect...", self._name, msg
+                f"{self._name} disconnected: {msg}. Trying to reconnect..."
             )
 
             # for reconnect, first gracefully disconnect
@@ -195,11 +193,11 @@ class HorizonDevice(MediaPlayerEntity):
                 self._client.connect()
                 self._client.authorize()
             except AuthenticationError as msg:
-                _LOGGER.error("Authentication to %s failed: %s", self._name, msg)
+                _LOGGER.error(f"Authentication to {self._name} failed: {msg}")
                 return
             except OSError as msg:
                 # occurs if horizon box is offline
-                _LOGGER.error("Reconnect to %s failed: %s", self._name, msg)
+                _LOGGER.error(f"Reconnect to {self._name} failed: {msg}")
                 return
 
             self._send(key=key, channel=channel)
