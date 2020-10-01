@@ -26,6 +26,7 @@
       },
       "data": {
         "email": "Email",
+        "name": "Name",
         "username": "Username",
         "password": "Password",
         "host": "Host",
